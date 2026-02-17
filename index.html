@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>hisobIA</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:       #F5F2EE;
+  --surface:  #FFFFFF;
+  --surface2: #EDE9E3;
+  --border:   #DDD8CF;
+  --text:     #2C2825;
+  --text2:    #7C776F;
+  --text3:    #ADA89F;
+  --accent:   #4A7C59;
+  --accent-l: #E8F2EC;
+  --red:      #C0392B;
+  --nav-h:    64px;
+  --top-h:    56px;
+  --radius:   16px;
+  --shadow:   0 2px 12px rgba(44,40,37,0.08);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body { height:100%; overflow:hidden; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  max-width: 430px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  height: var(--top-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  justify-content: space-between;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+/* ── LOGO ── */
+.logo {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  user-select: none;
+}
+
+.logo-ia{
+  color: var(--accent);
+  display: inline;
+  position: static;
+  width: auto;
+  height: auto;
+}
+
+/* sync indicator */
+.sync-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.3s;
+  flex-shrink: 0;
+}
+.sync-dot.pulse { animation: syncpulse 0.8s ease; }
+@keyframes syncpulse { 0%{opacity:1;transform:scale(1)} 50%{opacity:1;transform:scale(1.4)} 100%{opacity:0;transform:scale(1)} }
+
+.topbar-right { display:flex; align-items:center; gap:8px; }
+
+/* ── PAGES ── */
+.pages { flex:1; overflow:hidden; position:relative; }
+
+.page {
+  position: absolute; inset: 0;
+  overflow-y: auto;
+  padding: 14px 14px 10px;
+  display: none;
+  flex-direction: column;
+  gap: 11px;
+}
+.page.active { display:flex; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  height: var(--nav-h);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.nav-btn {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px;
+  background: none; border: none;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px; font-weight: 700;
+  color: var(--text3);
+  transition: color 0.18s;
+  position: relative;
+}
+.nav-btn svg { width:21px; height:21px; stroke-width:1.8; }
+.nav-btn.active { color: var(--accent); }
+.nav-btn.active::before {
+  content:'';
+  position:absolute; top:0; left:25%; right:25%;
+  height:2.5px; background:var(--accent);
+  border-radius:0 0 3px 3px;
+}
+
+/* ── CARD ── */
+.card { background:var(--surface); border-radius:var(--radius); padding:15px; box-shadow:var(--shadow); }
+
+/* ── HERO ── */
+.hero-card {
+  background: var(--accent); color:white;
+  border-radius: var(--radius);
+  padding: 18px 16px 16px;
+  position: relative; overflow: hidden;
+}
+.hero-card::before {
+  content:''; position:absolute; top:-25px; right:-25px;
+  width:110px; height:110px;
+  background:rgba(255,255,255,0.07); border-radius:50%;
+}
+.hero-card::after {
+  content:''; position:absolute; bottom:-35px; right:15px;
+  width:80px; height:80px;
+  background:rgba(255,255,255,0.05); border-radius:50%;
+}
+.hero-label { font-size:10px; font-weight:700; opacity:0.7; letter-spacing:1.2px; text-transform:uppercase; }
+.hero-amount {
+  font-family:'DM Mono',monospace; font-size:32px; font-weight:500;
+  margin:4px 0 12px; letter-spacing:-1px; line-height:1;
+}
+.hero-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.hero-stat { background:rgba(255,255,255,0.13); border-radius:10px; padding:9px 11px; }
+.hero-stat-val { font-family:'DM Mono',monospace; font-size:16px; font-weight:500; line-height:1; }
+.hero-stat-lbl { font-size:10px; opacity:0.65; margin-top:3px; }
+
+.prog-wrap { margin-top:10px; }
+.prog-meta { display:flex; justify-content:space-between; font-size:10px; opacity:0.7; margin-bottom:4px; }
+.prog-track { background:rgba(255,255,255,0.2); border-radius:99px; height:5px; overflow:hidden; }
+.prog-fill { height:100%; border-radius:99px; background:white; transition:width 0.5s ease; }
+
+/* ── MINI STATS ── */
+.mini-stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.mini-card { background:var(--surface); border-radius:14px; padding:13px; box-shadow:var(--shadow); }
+.mini-ico { width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; margin-bottom:7px; }
+.mini-val { font-family:'DM Mono',monospace; font-size:16px; color:var(--text); line-height:1; font-weight:500; }
+.mini-lbl { font-size:10px; color:var(--text3); margin-top:3px; font-weight:700; letter-spacing:0.4px; }
+
+/* ── SEC TITLE ── */
+.sec-title { font-size:10px; font-weight:800; letter-spacing:1.2px; color:var(--text3); text-transform:uppercase; margin-bottom:8px; }
+
+/* ── HISTORY ── */
+.hist-list { display:flex; flex-direction:column; gap:7px; }
+.entry-card {
+  background:var(--surface); border-radius:13px; padding:12px 13px;
+  display:flex; align-items:center; gap:11px;
+  box-shadow:0 1px 5px rgba(44,40,37,0.06);
+}
+.entry-ico { width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+.entry-info { flex:1; min-width:0; }
+.entry-desc { font-size:13px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.entry-meta { font-size:10px; color:var(--text3); margin-top:2px; font-weight:600; }
+.entry-right { display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0; }
+.entry-amt { font-family:'DM Mono',monospace; font-size:14px; color:var(--text); }
+.del-btn { background:none; border:none; cursor:pointer; font-size:13px; color:var(--text3); padding:1px; transition:color 0.15s; }
+.del-btn:hover { color:var(--red); }
+
+.empty-msg { text-align:center; padding:24px 16px; color:var(--text3); font-size:13px; font-weight:600; }
+.empty-msg .big { font-size:28px; margin-bottom:6px; }
+
+/* ── ADD FORM ── */
+.add-form { display:flex; flex-direction:column; gap:10px; }
+.f-row { display:flex; flex-direction:column; gap:5px; }
+.f-lbl { font-size:10px; font-weight:800; color:var(--text3); letter-spacing:0.8px; text-transform:uppercase; }
+.f-input {
+  width:100%; border:1.5px solid var(--border); border-radius:11px;
+  padding:11px 13px;
+  font-family:'Nunito',sans-serif; font-size:15px; font-weight:700;
+  color:var(--text); background:var(--bg); outline:none;
+  transition:border-color 0.15s, background 0.15s;
+}
+.f-input:focus { border-color:var(--accent); background:white; }
+.amt-wrap { position:relative; }
+.amt-wrap .cur { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--text3); font-size:12px; font-weight:800; pointer-events:none; letter-spacing:0.5px; }
+.amt-wrap .f-input { padding-left:44px; font-family:'DM Mono',monospace; font-size:19px; }
+
+.cat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+.cat-item {
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:9px 4px; border-radius:11px;
+  border:1.5px solid var(--border); background:var(--bg);
+  cursor:pointer; font-size:10px; font-weight:800; color:var(--text2);
+  transition:all 0.15s; text-align:center;
+}
+.cat-item .ico { font-size:19px; line-height:1; }
+.cat-item.sel { border-color:var(--accent); background:var(--accent-l); color:var(--accent); }
+
+.add-btn {
+  background:var(--accent); color:white; border:none;
+  border-radius:12px; padding:14px;
+  font-family:'Nunito',sans-serif; font-size:15px; font-weight:800;
+  cursor:pointer; transition:opacity 0.15s, transform 0.1s;
+}
+.add-btn:active { transform:scale(0.98); opacity:0.88; }
+
+/* ── BUDGET CARD ── */
+.budget-row { display:flex; gap:8px; }
+.budget-row .f-input { flex:1; }
+.budget-save {
+  background:var(--accent-l); color:var(--accent);
+  border:1.5px solid var(--accent); border-radius:11px;
+  padding:0 14px;
+  font-family:'Nunito',sans-serif; font-size:13px; font-weight:800;
+  cursor:pointer; white-space:nowrap; flex-shrink:0;
+}
+
+/* ── STATS PAGE ── */
+.stats-hero {
+  background:#3D5A80; color:white;
+  border-radius:var(--radius); padding:18px 16px 16px;
+  position:relative; overflow:hidden;
+}
+.stats-hero::before {
+  content:''; position:absolute; top:-20px; right:-20px;
+  width:100px; height:100px;
+  background:rgba(255,255,255,0.07); border-radius:50%;
+}
+.cat-stat-row {
+  background:var(--surface); border-radius:13px; padding:12px 13px;
+  box-shadow:0 1px 5px rgba(44,40,37,0.05);
+}
+.cat-stat-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
+.cat-stat-name { display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; }
+.cat-stat-amt { font-family:'DM Mono',monospace; font-size:13px; color:var(--text2); }
+.cat-bar-track { background:var(--surface2); border-radius:99px; height:4px; overflow:hidden; }
+.cat-bar-fill { height:100%; border-radius:99px; transition:width 0.5s ease; }
+.cat-pct { font-size:10px; color:var(--text3); margin-top:4px; font-weight:700; }
+
+/* CAT colors */
+.ic-oziq      { background:#E8F5E9; }
+.ic-transport { background:#E3F2FD; }
+.ic-kommunal  { background:#FFF8E1; }
+.ic-soglik    { background:#FCE4EC; }
+.ic-kiyim     { background:#F3E5F5; }
+.ic-boshqa    { background:#ECEFF1; }
+.bar-oziq      { background:#4CAF50; }
+.bar-transport { background:#2196F3; }
+.bar-kommunal  { background:#FFC107; }
+.bar-soglik    { background:#E91E63; }
+.bar-kiyim     { background:#9C27B0; }
+.bar-boshqa    { background:#90A4AE; }
+
+/* ── MODAL (PIN / CONFIRM) ── */
+.modal-backdrop {
+  position: fixed; inset:0;
+  background: rgba(44,40,37,0.45);
+  z-index: 100;
+  display: flex; align-items: flex-end; justify-content: center;
+  opacity:0; pointer-events:none;
+  transition: opacity 0.2s;
+}
+.modal-backdrop.open { opacity:1; pointer-events:all; }
+
+.modal-sheet {
+  background: var(--surface);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px 32px;
+  width: 100%; max-width: 430px;
+  transform: translateY(100%);
+  transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+  display: flex; flex-direction:column; gap:14px;
+}
+.modal-backdrop.open .modal-sheet { transform: translateY(0); }
+
+.modal-handle {
+  width:36px; height:4px; border-radius:99px;
+  background:var(--border); margin:0 auto -4px;
+}
+.modal-title { font-size:16px; font-weight:800; text-align:center; }
+.modal-sub { font-size:13px; color:var(--text3); text-align:center; font-weight:600; line-height:1.4; }
+
+.pin-hint {
+  font-size:11px; color:var(--text3); text-align:center; font-weight:600;
+  background:var(--bg); border-radius:10px; padding:8px 12px;
+}
+.pin-hint span { color:var(--accent); font-family:'DM Mono',monospace; font-size:13px; font-weight:500; }
+
+.pin-input {
+  width:100%; border:1.5px solid var(--border); border-radius:11px;
+  padding:13px; text-align:center;
+  font-family:'DM Mono',monospace; font-size:24px; font-weight:500;
+  color:var(--text); background:var(--bg); outline:none;
+  letter-spacing:8px;
+  transition:border-color 0.15s;
+}
+.pin-input:focus { border-color:var(--accent); background:white; }
+.pin-input.err { border-color:var(--red); animation:shake 0.3s ease; }
+
+@keyframes shake {
+  0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+}
+
+.modal-btns { display:flex; gap:8px; }
+.modal-btn {
+  flex:1; padding:13px; border-radius:11px; border:none;
+  font-family:'Nunito',sans-serif; font-size:14px; font-weight:800;
+  cursor:pointer; transition:opacity 0.15s;
+}
+.modal-btn.cancel { background:var(--surface2); color:var(--text2); }
+.modal-btn.confirm { background:var(--accent); color:white; }
+.modal-btn.danger  { background:var(--red); color:white; }
+.modal-btn:active  { opacity:0.85; }
+
+/* ── LOADING ── */
+.loading-overlay {
+  position:fixed; inset:0;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  z-index:200;
+  transition:opacity 0.4s;
+}
+.loading-overlay.done { opacity:0; pointer-events:none; }
+.loading-spinner {
+  width:32px; height:32px;
+  border:3px solid var(--border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed;
+  bottom:calc(var(--nav-h) + 10px);
+  left:50%; transform:translateX(-50%) translateY(8px);
+  background:rgba(44,40,37,0.92); color:white;
+  font-family:'Nunito',sans-serif; font-size:13px; font-weight:700;
+  padding:9px 18px; border-radius:99px;
+  z-index:1000; opacity:0; transition:all 0.22s;
+  white-space:nowrap; pointer-events:none;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loader">
+  <div class="loading-spinner"></div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">
+    <span class="logo-ia">xa</span>rajat
+  </div>
+  <div class="topbar-right">
+    <div class="sync-dot" id="sync-dot"></div>
+    <span id="clock-disp">--:--</span>
+  </div>
+</div>
+
+<!-- PAGES -->
+<div class="pages">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dash">
+    <div class="hero-card">
+      <div class="hero-label">Jami xarajat</div>
+      <div class="hero-amount" id="h-total">0 UZS</div>
+      <div class="hero-row">
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="h-remain">—</div>
+          <div class="hero-stat-lbl">Qoldi</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="h-count">0</div>
+          <div class="hero-stat-lbl">Operatsiya</div>
+        </div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-meta">
+          <span id="h-prog-lbl">Byudjet belgilanmagan</span>
+          <span id="h-prog-pct"></span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" id="h-prog-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="mini-stats">
+      <div class="mini-card">
+        <div class="mini-ico ic-oziq">📅</div>
+        <div class="mini-val" id="m-today">0</div>
+        <div class="mini-lbl">Bugun (UZS)</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-ico ic-transport">🏆</div>
+        <div class="mini-val" id="m-topcat">—</div>
+        <div class="mini-lbl">Asosiy kategoriya</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-title">So'nggi xarajatlar</div>
+      <div class="hist-list" id="dash-recent"></div>
+    </div>
+  </div>
+
+  <!-- QO'SHISH -->
+  <div class="page" id="page-add">
+    <div class="card add-form">
+      <div class="sec-title">Yangi xarajat</div>
+      <div class="f-row">
+        <div class="f-lbl">Tavsif</div>
+        <input class="f-input" type="text" id="f-desc" placeholder="Masalan: non va sut" maxlength="60"/>
+      </div>
+      <div class="f-row">
+        <div class="f-lbl">Miqdor</div>
+        <div class="amt-wrap">
+          <span class="cur">UZS</span>
+          <input class="f-input" type="number" id="f-amount" placeholder="0" min="0" inputmode="numeric"/>
+        </div>
+      </div>
+      <div class="f-row">
+        <div class="f-lbl">Kategoriya</div>
+        <div class="cat-grid" id="cat-grid">
+          <div class="cat-item sel" data-cat="oziq"><span class="ico">🌾</span>Oziq-ovqat</div>
+          <div class="cat-item" data-cat="transport"><span class="ico">🚌</span>Transport</div>
+          <div class="cat-item" data-cat="kommunal"><span class="ico">💡</span>Kommunal</div>
+          <div class="cat-item" data-cat="soglik"><span class="ico">💊</span>Sog'liq</div>
+          <div class="cat-item" data-cat="kiyim"><span class="ico">👔</span>Kiyim</div>
+          <div class="cat-item" data-cat="boshqa"><span class="ico">📦</span>Boshqa</div>
+        </div>
+      </div>
+      <button class="add-btn" onclick="addEntry()">Qo'shish</button>
+    </div>
+
+    <div class="card">
+      <div class="sec-title">Oylik byudjet</div>
+      <div class="budget-row">
+        <input class="f-input" type="number" id="f-budget" placeholder="Byudjet (UZS)" inputmode="numeric"/>
+        <button class="budget-save" onclick="openPinModal()">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARIX -->
+  <div class="page" id="page-hist">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div class="sec-title" style="margin-bottom:0">Barcha xarajatlar</div>
+      <button onclick="openClearConfirm()" style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;color:var(--red);background:none;border:none;cursor:pointer;">Tozalash</button>
+    </div>
+    <div class="hist-list" id="hist-list"></div>
+  </div>
+
+  <!-- STATISTIKA -->
+  <div class="page" id="page-stats">
+    <div class="stats-hero">
+      <div class="hero-label">Kategoriyalar bo'yicha</div>
+      <div class="hero-amount" id="s-total">0 UZS</div>
+      <div class="hero-row">
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="s-cats">0</div>
+          <div class="hero-stat-lbl">Kategoriya</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="s-avg">0</div>
+          <div class="hero-stat-lbl">O'rtacha</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-title">Taqsimot</div>
+      <div style="display:flex;flex-direction:column;gap:7px;" id="cat-stat-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="goPage('dash',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    Dashboard
+  </button>
+  <button class="nav-btn" onclick="goPage('add',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    Qo'shish
+  </button>
+  <button class="nav-btn" onclick="goPage('hist',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    Tarix
+  </button>
+  <button class="nav-btn" onclick="goPage('stats',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    Statistika
+  </button>
+</nav>
+
+<!-- MODAL: PIN -->
+<div class="modal-backdrop" id="modal-pin">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Byudjetni o'zgartirish</div>
+    <div class="modal-sub">Tasdiqlash uchun maxfiy so'zni kiriting.</div>
+    <div class="pin-hint" style="display: none;">Hozirgi kod: <span id="pin-show">----</span></div>
+    <input class="pin-input" type="text" id="pin-input" maxlength="4" placeholder="····" inputmode="numeric" autocomplete="off"/>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal('modal-pin')">Bekor</button>
+      <button class="modal-btn confirm" onclick="confirmPin()">Tasdiqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFIRM DELETE SINGLE -->
+<div class="modal-backdrop" id="modal-del">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">O'chirishni tasdiqlang</div>
+    <div class="modal-sub" id="modal-del-desc">Bu xarajatni o'chirmoqchimisiz?</div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal('modal-del')">Bekor</button>
+      <button class="modal-btn danger" onclick="confirmDelete()">O'chirish</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFIRM CLEAR ALL -->
+<div class="modal-backdrop" id="modal-clear">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Hammasini o'chirish</div>
+    <div class="modal-sub">Barcha xarajatlarni o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi.</div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal('modal-clear')">Bekor</button>
+      <button class="modal-btn danger" onclick="confirmClear()">Hammani o'chirish</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────
+// CONFIG — serverga deploy qilgandan so'ng
+// shu URL-ni o'zgartiring:
+// const API = 'https://your-app.onrender.com';
+// Local test uchun:
+const API = window.location.origin;
+// ─────────────────────────────────────────
+
+const CATS = {
+  oziq:      { label:'Oziq-ovqat', ico:'🌾', ic:'ic-oziq',      bar:'bar-oziq'      },
+  transport: { label:'Transport',  ico:'🚌', ic:'ic-transport', bar:'bar-transport' },
+  kommunal:  { label:'Kommunal',   ico:'💡', ic:'ic-kommunal',  bar:'bar-kommunal'  },
+  soglik:    { label:"Sog'liq",    ico:'💊', ic:'ic-soglik',    bar:'bar-soglik'    },
+  kiyim:     { label:'Kiyim',      ico:'👔', ic:'ic-kiyim',     bar:'bar-kiyim'     },
+  boshqa:    { label:'Boshqa',     ico:'📦', ic:'ic-boshqa',    bar:'bar-boshqa'    },
+};
+
+let entries = [];
+let budget  = 0;
+let selCat  = 'oziq';
+let pendingDeleteId = null;
+
+// ── HELPERS ──────────────────────────────
+function fmt(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1).replace('.0','') + 'M';
+  if (n >= 1000)    return Math.round(n/1000) + 'K';
+  return Math.round(n).toString();
+}
+function fmtFull(n) { return Math.round(n).toLocaleString('uz-UZ'); }
+function today()    { return new Date().toISOString().slice(0,10); }
+
+function dateLabel(iso) {
+  if (iso === today()) return 'Bugun';
+  const y = new Date(); y.setDate(y.getDate()-1);
+  if (iso === y.toISOString().slice(0,10)) return 'Kecha';
+  return new Date(iso).toLocaleDateString('uz-UZ', {day:'numeric', month:'short'});
+}
+
+function syncPulse() {
+  const d = document.getElementById('sync-dot');
+  d.classList.remove('pulse');
+  void d.offsetWidth;
+  d.classList.add('pulse');
+}
+
+// ── API CALLS ─────────────────────────────
+async function apiFetch(path, opts={}) {
+  try {
+    const r = await fetch(API + path, {
+      headers: { 'Content-Type':'application/json' },
+      ...opts,
+      body: opts.body ? JSON.stringify(opts.body) : undefined,
+    });
+    return await r.json();
+  } catch(e) {
+    // Fallback to localStorage if server not available
+    return null;
+  }
+}
+
+async function loadData() {
+  const data = await apiFetch('/api/data');
+  if (data) {
+    entries = data.entries || [];
+    budget  = data.budget  || 0;
+    syncPulse();
+  } else {
+    // localStorage fallback
+    entries = JSON.parse(localStorage.getItem('x_entries3') || '[]');
+    budget  = parseFloat(localStorage.getItem('x_budget3')  || '0');
+  }
+  if (budget) document.getElementById('f-budget').value = budget;
+  renderDash();
+  document.getElementById('loader').classList.add('done');
+}
+
+function saveLocal() {
+  localStorage.setItem('x_entries3', JSON.stringify(entries));
+  localStorage.setItem('x_budget3',  budget);
+}
+
+// ── NAV ───────────────────────────────────
+function goPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if (name==='dash')  renderDash();
+  if (name==='hist')  renderHist();
+  if (name==='stats') renderStats();
+}
+
+// ── CAT SELECT ────────────────────────────
+document.querySelectorAll('.cat-item').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.cat-item').forEach(x=>x.classList.remove('sel'));
+    el.classList.add('sel');
+    selCat = el.dataset.cat;
+  });
+});
+
+// ── ADD ENTRY ─────────────────────────────
+async function addEntry() {
+  const desc   = document.getElementById('f-desc').value.trim();
+  const amount = parseFloat(document.getElementById('f-amount').value);
+  if (!desc)               { toast('Tavsif kiriting'); return; }
+  if (!amount || amount<=0){ toast("To'g'ri miqdor kiriting"); return; }
+
+  const entry = { id: Date.now(), desc, amount, cat: selCat, date: today() };
+
+  // Optimistic update
+  entries.unshift(entry);
+  saveLocal();
+  document.getElementById('f-desc').value   = '';
+  document.getElementById('f-amount').value = '';
+  renderDash();
+  toast("✓ Xarajat qo'shildi");
+
+  // Sync to server
+  const res = await apiFetch('/api/entries', { method:'POST', body: entry });
+  if (res) { syncPulse(); } else { toast('⚠ Serverga ulanilmadi, lokal saqlandi'); }
+
+  const total = entries.reduce((s,e)=>s+e.amount,0);
+  if (budget && total > budget) setTimeout(()=>toast('⚠ Byudjet oshib ketdi!'),2400);
+}
+
+// ── PIN / BUDGET ──────────────────────────
+function getTimePin() {
+  const n = new Date();
+  const h = String(n.getHours()).padStart(2,'0');
+  const m = String(n.getMinutes()).padStart(2,'0');
+  return h + m; // e.g. "1505"
+}
+
+function openPinModal() {
+  const v = parseFloat(document.getElementById('f-budget').value);
+  if (!v || v<=0) { toast("To'g'ri byudjet kiriting"); return; }
+  document.getElementById('pin-show').textContent = getTimePin();
+  document.getElementById('pin-input').value = '';
+  document.getElementById('pin-input').classList.remove('err');
+  openModal('modal-pin');
+  setTimeout(()=>document.getElementById('pin-input').focus(), 300);
+}
+
+async function confirmPin() {
+  const entered = document.getElementById('pin-input').value.trim();
+  const correct = getTimePin();
+  if (entered !== correct) {
+    const inp = document.getElementById('pin-input');
+    inp.classList.add('err');
+    setTimeout(()=>inp.classList.remove('err'), 400);
+    toast("Noto'g'ri kod");
+    return;
+  }
+  budget = parseFloat(document.getElementById('f-budget').value);
+  saveLocal();
+  closeModal('modal-pin');
+  toast('✓ Byudjet saqlandi');
+  renderDash();
+
+  // Sync
+  const res = await apiFetch('/api/budget', { method:'PUT', body:{ budget, pin: entered } });
+  if (res) syncPulse();
+}
+
+// ── DELETE ────────────────────────────────
+function openDeleteConfirm(id) {
+  pendingDeleteId = id;
+  const e = entries.find(x=>x.id===id);
+  document.getElementById('modal-del-desc').textContent =
+    e ? `"${e.desc}" — ${fmtFull(e.amount)} UZS ni o'chirmoqchimisiz?`
+      : "Bu xarajatni o'chirmoqchimisiz?";
+  openModal('modal-del');
+}
+
+async function confirmDelete() {
+  if (pendingDeleteId === null) return;
+  const id = pendingDeleteId;
+  pendingDeleteId = null;
+  closeModal('modal-del');
+
+  entries = entries.filter(e=>e.id!==id);
+  saveLocal();
+  renderDash(); renderHist(); renderStats();
+  toast("O'chirildi");
+
+  const res = await apiFetch('/api/entries/'+id, { method:'DELETE' });
+  if (res) syncPulse();
+}
+
+function openClearConfirm() {
+  if (!entries.length) { toast("Jurnal bo'sh"); return; }
+  openModal('modal-clear');
+}
+
+async function confirmClear() {
+  closeModal('modal-clear');
+  entries = [];
+  saveLocal();
+  renderDash(); renderHist(); renderStats();
+  toast('Tozalandi');
+
+  const res = await apiFetch('/api/entries', { method:'DELETE' });
+  if (res) syncPulse();
+}
+
+// ── MODAL HELPERS ─────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// close on backdrop click
+document.querySelectorAll('.modal-backdrop').forEach(el => {
+  el.addEventListener('click', e => { if (e.target===el) closeModal(el.id); });
+});
+
+// pin enter key
+document.getElementById('pin-input').addEventListener('keydown', e => {
+  if (e.key==='Enter') confirmPin();
+});
+
+// ── ENTRY HTML ────────────────────────────
+function entryHTML(e) {
+  const c = CATS[e.cat]||CATS.boshqa;
+  return `<div class="entry-card">
+    <div class="entry-ico ${c.ic}">${c.ico}</div>
+    <div class="entry-info">
+      <div class="entry-desc">${e.desc}</div>
+      <div class="entry-meta">${dateLabel(e.date)} · ${c.label}</div>
+    </div>
+    <div class="entry-right">
+      <div class="entry-amt">${fmtFull(e.amount)}</div>
+      <button class="del-btn" onclick="openDeleteConfirm(${e.id})">✕</button>
+    </div>
+  </div>`;
+}
+
+// ── RENDER DASH ───────────────────────────
+function renderDash() {
+  const total = entries.reduce((s,e)=>s+e.amount,0);
+  document.getElementById('h-total').textContent = fmtFull(total)+' UZS';
+  document.getElementById('h-count').textContent = entries.length;
+
+  if (budget) {
+    const rem = budget - total;
+    document.getElementById('h-remain').textContent = fmt(Math.abs(rem))+(rem<0?' ↑':'')+' UZS';
+    const pct = Math.min(total/budget*100, 100);
+    document.getElementById('h-prog-fill').style.width = pct+'%';
+    document.getElementById('h-prog-lbl').textContent  = 'Byudjet: '+fmt(budget)+' UZS';
+    document.getElementById('h-prog-pct').textContent  = Math.round(pct)+'%';
+  } else {
+    document.getElementById('h-remain').textContent    = '—';
+    document.getElementById('h-prog-lbl').textContent  = 'Byudjet belgilanmagan';
+    document.getElementById('h-prog-pct').textContent  = '';
+    document.getElementById('h-prog-fill').style.width = '0%';
+  }
+
+  const todayT = entries.filter(e=>e.date===today()).reduce((s,e)=>s+e.amount,0);
+  document.getElementById('m-today').textContent = fmt(todayT);
+
+  const catT={};
+  entries.forEach(e=>{ catT[e.cat]=(catT[e.cat]||0)+e.amount; });
+  const top = Object.entries(catT).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('m-topcat').textContent = top ? CATS[top[0]].ico : '—';
+
+  const el  = document.getElementById('dash-recent');
+  const rec = entries.slice(0,3);
+  el.innerHTML = rec.length
+    ? rec.map(e=>entryHTML(e)).join('')
+    : '<div class="empty-msg"><div class="big">🌱</div>Hali xarajat yo\'q</div>';
+}
+
+// ── RENDER HIST ───────────────────────────
+function renderHist() {
+  const el = document.getElementById('hist-list');
+  el.innerHTML = entries.length
+    ? entries.map(e=>entryHTML(e)).join('')
+    : '<div class="empty-msg"><div class="big">📋</div>Tarix bo\'sh</div>';
+}
+
+// ── RENDER STATS ──────────────────────────
+function renderStats() {
+  const total = entries.reduce((s,e)=>s+e.amount,0);
+  document.getElementById('s-total').textContent = fmtFull(total)+' UZS';
+  const catT={};
+  entries.forEach(e=>{ catT[e.cat]=(catT[e.cat]||0)+e.amount; });
+  const cats = Object.entries(catT).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('s-cats').textContent = cats.length;
+  document.getElementById('s-avg').textContent  = entries.length ? fmt(total/entries.length) : '0';
+
+  const el = document.getElementById('cat-stat-list');
+  if (!cats.length) {
+    el.innerHTML='<div class="empty-msg"><div class="big">📊</div>Ma\'lumot yo\'q</div>';
+    return;
+  }
+  const max = cats[0][1];
+  el.innerHTML = cats.map(([cat,amt])=>{
+    const c   = CATS[cat]||CATS.boshqa;
+    const pct = total?(amt/total*100):0;
+    return `<div class="cat-stat-row">
+      <div class="cat-stat-top">
+        <div class="cat-stat-name"><span>${c.ico}</span>${c.label}</div>
+        <div class="cat-stat-amt">${fmtFull(amt)}</div>
+      </div>
+      <div class="cat-bar-track">
+        <div class="cat-bar-fill ${c.bar}" style="width:${(amt/max*100).toFixed(1)}%"></div>
+      </div>
+      <div class="cat-pct">${pct.toFixed(1)}% · ${entries.filter(e=>e.cat===cat).length} ta operatsiya</div>
+    </div>`;
+  }).join('');
+}
+
+// ── TOAST ─────────────────────────────────
+let toastT;
+function toast(msg) {
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>el.classList.remove('show'),2000);
+}
+
+// ── CLOCK ─────────────────────────────────
+function tick() {
+  const n=new Date();
+  const t=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('clock-disp').textContent=t;
+  // Update PIN hint if modal open
+  if (document.getElementById('modal-pin').classList.contains('open')) {
+    document.getElementById('pin-show').textContent = getTimePin();
+  }
+}
+tick();
+setInterval(tick, 10000);
+
+// ── ENTER KEY ─────────────────────────────
+document.addEventListener('keydown', e=>{
+  if (e.key==='Enter' && ['f-desc','f-amount'].includes(document.activeElement.id)) addEntry();
+});
+
+// ── INIT ──────────────────────────────────
+loadData();
+</script>
+</body>
+</html>

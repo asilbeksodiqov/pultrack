@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="/icons/icon-192.png"/>
 <link rel="manifest" href="/manifest.json"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>xarajat</title>
+<title>PulTrack</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap');
 
@@ -171,12 +171,15 @@ body {
 .sec-title { font-size:10px; font-weight:800; letter-spacing:1.2px; color:var(--text3); text-transform:uppercase; margin-bottom:8px; }
 
 /* ── HISTORY ── */
-.hist-list { display:flex; flex-direction:column; gap:7px; }
+.hist-list { display:flex; flex-direction:column; gap:7px; position:relative; }
 .entry-card {
   background:var(--surface); border-radius:13px; padding:12px 13px;
   display:flex; align-items:center; gap:11px;
   box-shadow:0 1px 5px rgba(44,40,37,0.06);
+  position:relative;
 }
+.entry-card.clickable { cursor:pointer; }
+
 .entry-ico { width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
 .entry-info { flex:1; min-width:0; }
 .entry-desc { font-size:13px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -185,6 +188,58 @@ body {
 .entry-amt { font-family:'DM Mono',monospace; font-size:14px; color:var(--text); }
 .del-btn { background:none; border:none; cursor:pointer; font-size:13px; color:var(--text3); padding:1px; transition:color 0.15s; }
 .del-btn:hover { color:var(--red); }
+
+/* entry context menu */
+.entry-context {
+  position:absolute;
+  right:10px; top:50%;
+  transform:translateY(-50%);
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  box-shadow:var(--shadow);
+  display:flex;
+  gap:4px;
+  padding:4px;
+  z-index:5;
+}
+.entry-context-btn {
+  background:var(--bg);
+  border:none;
+  padding:6px 12px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.entry-context-btn.edit { color:var(--accent); }
+.entry-context-btn.delete { color:var(--red); }
+.entry-context-btn:hover { opacity:0.7; }
+
+/* filter buttons */
+.filter-row {
+  display:flex;
+  gap:6px;
+  margin-top:6px;
+}
+.filter-btn {
+  flex:1;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  padding:10px;
+  font-size:11px;
+  font-weight:800;
+  color:var(--text2);
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.filter-btn.active {
+  border-color:var(--accent);
+  background:var(--accent-l);
+  color:var(--accent);
+}
 
 .empty-msg { text-align:center; padding:24px 16px; color:var(--text3); font-size:13px; font-weight:600; }
 .empty-msg .big { font-size:28px; margin-bottom:6px; }
@@ -224,38 +279,59 @@ body {
 }
 .add-btn:active { transform:scale(0.98); opacity:0.88; }
 
-/* ── BUDGET CARD ── */
-.budget-row { display:flex; gap:8px; }
-.budget-row .f-input { flex:1; }
-.budget-save {
-  background:var(--accent-l); color:var(--accent);
-  border:1.5px solid var(--accent); border-radius:11px;
-  padding:0 14px;
-  font-family:'Nunito',sans-serif; font-size:13px; font-weight:800;
-  cursor:pointer; white-space:nowrap; flex-shrink:0;
+/* ── BOSHQA (settings) ── */
+.settings-list {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
 }
-
-/* ── STATS PAGE ── */
-.stats-hero {
-  background:#3D5A80; color:white;
-  border-radius:var(--radius); padding:18px 16px 16px;
-  position:relative; overflow:hidden;
-}
-.stats-hero::before {
-  content:''; position:absolute; top:-20px; right:-20px;
-  width:100px; height:100px;
-  background:rgba(255,255,255,0.07); border-radius:50%;
-}
-.cat-stat-row {
-  background:var(--surface); border-radius:13px; padding:12px 13px;
+.setting-item {
+  background:var(--surface);
+  border-radius:13px;
+  padding:14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
   box-shadow:0 1px 5px rgba(44,40,37,0.05);
 }
-.cat-stat-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
-.cat-stat-name { display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; }
-.cat-stat-amt { font-family:'DM Mono',monospace; font-size:13px; color:var(--text2); }
-.cat-bar-track { background:var(--surface2); border-radius:99px; height:4px; overflow:hidden; }
-.cat-bar-fill { height:100%; border-radius:99px; transition:width 0.5s ease; }
-.cat-pct { font-size:10px; color:var(--text3); margin-top:4px; font-weight:700; }
+.setting-info { flex:1; }
+.setting-name { font-size:14px; font-weight:700; color:var(--text); }
+.setting-desc { font-size:11px; color:var(--text3); margin-top:2px; }
+.setting-action {
+  background:var(--accent-l);
+  color:var(--accent);
+  border:1.5px solid var(--accent);
+  border-radius:10px;
+  padding:8px 14px;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+.setting-action.disabled {
+  background:var(--surface2);
+  color:var(--text3);
+  border-color:var(--border);
+  cursor:not-allowed;
+}
+
+/* ── CHART (diagramma) ── */
+.chart-card {
+  background:var(--surface);
+  border-radius:var(--radius);
+  padding:16px;
+  box-shadow:var(--shadow);
+}
+.chart-title {
+  font-size:12px;
+  font-weight:800;
+  color:var(--text);
+  margin-bottom:10px;
+  letter-spacing:0.5px;
+}
+.chart-canvas {
+  width:100%;
+  height:180px;
+}
 
 /* CAT colors */
 .ic-oziq      { background:#E8F5E9; }
@@ -263,12 +339,18 @@ body {
 .ic-kommunal  { background:#FFF8E1; }
 .ic-soglik    { background:#FCE4EC; }
 .ic-kiyim     { background:#F3E5F5; }
+.ic-uy        { background:#E0F2F1; }
+.ic-taʼlim    { background:#FFF3E0; }
+.ic-koʼngil   { background:#F3E5F5; }
 .ic-boshqa    { background:#ECEFF1; }
 .bar-oziq      { background:#4CAF50; }
 .bar-transport { background:#2196F3; }
 .bar-kommunal  { background:#FFC107; }
 .bar-soglik    { background:#E91E63; }
 .bar-kiyim     { background:#9C27B0; }
+.bar-uy        { background:#00897B; }
+.bar-taʼlim    { background:#FB8C00; }
+.bar-koʼngil   { background:#7B1FA2; }
 .bar-boshqa    { background:#90A4AE; }
 
 /* ── MODAL (PIN / CONFIRM) ── */
@@ -351,7 +433,7 @@ body {
 <!-- TOP BAR -->
 <div class="topbar">
   <div class="logo">
-    <span class="logo-ia">xa</span>rajat
+    <span class="logo-ia">Pul</span>Track
   </div>
   <div class="topbar-right">
     <span id="clock-disp">--:--</span>
@@ -416,7 +498,7 @@ body {
         <div class="f-lbl">Miqdor</div>
         <div class="amt-wrap">
           <span class="cur">UZS</span>
-          <input class="f-input" type="number" id="f-amount" placeholder="0" min="0" inputmode="numeric"/>
+          <input class="f-input" type="text" id="f-amount" placeholder="0" inputmode="numeric"/>
         </div>
       </div>
       <div class="f-row">
@@ -427,18 +509,13 @@ body {
           <div class="cat-item" data-cat="kommunal"><span class="ico">💡</span>Kommunal</div>
           <div class="cat-item" data-cat="soglik"><span class="ico">💊</span>Sog'liq</div>
           <div class="cat-item" data-cat="kiyim"><span class="ico">👔</span>Kiyim</div>
+          <div class="cat-item" data-cat="uy"><span class="ico">🏠</span>Uy-joy</div>
+          <div class="cat-item" data-cat="taʼlim"><span class="ico">📚</span>Ta'lim</div>
+          <div class="cat-item" data-cat="koʼngil"><span class="ico">🎮</span>Ko'ngil</div>
           <div class="cat-item" data-cat="boshqa"><span class="ico">📦</span>Boshqa</div>
         </div>
       </div>
       <button class="add-btn" onclick="addEntry()">Qo'shish</button>
-    </div>
-
-    <div class="card">
-      <div class="sec-title">Oylik byudjet</div>
-      <div class="budget-row">
-        <input class="f-input" type="number" id="f-budget" placeholder="Byudjet (UZS)" inputmode="numeric"/>
-        <button class="budget-save" onclick="openPinModal()">Saqlash</button>
-      </div>
     </div>
   </div>
 
@@ -448,28 +525,65 @@ body {
       <div class="sec-title" style="margin-bottom:0">Barcha xarajatlar</div>
       <button onclick="openClearConfirm()" style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;color:var(--red);background:none;border:none;cursor:pointer;">Tozalash</button>
     </div>
+    <div class="filter-row">
+      <button class="filter-btn" id="filter-date-btn" onclick="toggleDateFilter()">📅 Kun bo'yicha</button>
+      <button class="filter-btn" id="filter-cat-btn" onclick="openCatFilter()">📂 Kategoriya</button>
+    </div>
+    <div id="date-filter-section" style="display:none; margin-top:8px;">
+      <div style="display:flex; gap:6px; margin-bottom:8px;">
+        <input type="date" id="filter-date-start" class="f-input" style="flex:1; padding:8px; font-size:12px;"/>
+        <input type="date" id="filter-date-end" class="f-input" style="flex:1; padding:8px; font-size:12px;"/>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="modal-btn cancel" style="flex:1; font-size:12px; padding:8px;" onclick="clearDateFilter()">Tozalash</button>
+        <button class="modal-btn confirm" style="flex:1; font-size:12px; padding:8px;" onclick="applyDateFilter()">Qo'llash</button>
+      </div>
+    </div>
     <div class="hist-list" id="hist-list"></div>
   </div>
 
-  <!-- STATISTIKA -->
-  <div class="page" id="page-stats">
-    <div class="stats-hero">
-      <div class="hero-label">Kategoriyalar bo'yicha</div>
-      <div class="hero-amount" id="s-total">0 UZS</div>
-      <div class="hero-row">
-        <div class="hero-stat">
-          <div class="hero-stat-val" id="s-cats">0</div>
-          <div class="hero-stat-lbl">Kategoriya</div>
+  <!-- BOSHQA (settings + budget) -->
+  <div class="page" id="page-other">
+    <div class="chart-card">
+      <div class="chart-title">Oylik diagramma</div>
+      <canvas id="monthChart" class="chart-canvas"></canvas>
+    </div>
+
+    <div class="card">
+      <div class="sec-title">Byudjet sozlash</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="flex:1;">
+          <div style="font-size:11px;color:var(--text3);font-weight:700;margin-bottom:4px;">
+            Oylik byudjet: <span style="color:var(--accent);font-family:'DM Mono',monospace;font-size:16px;" id="budget-display">—</span> UZS
+          </div>
         </div>
-        <div class="hero-stat">
-          <div class="hero-stat-val" id="s-avg">0</div>
-          <div class="hero-stat-lbl">O'rtacha</div>
-        </div>
+        <button class="setting-action" onclick="openBudgetChange()">O'zgartirish</button>
       </div>
     </div>
-    <div>
-      <div class="sec-title">Taqsimot</div>
-      <div style="display:flex;flex-direction:column;gap:7px;" id="cat-stat-list"></div>
+
+    <div class="settings-list">
+      <div class="sec-title">Sozlamalar</div>
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-name">Bildirishnomalar</div>
+          <div class="setting-desc">Byudjet tugaganda ogohlantir</div>
+        </div>
+        <button class="setting-action disabled">Tez orada</button>
+      </div>
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-name">Davr</div>
+          <div class="setting-desc">Haftalik/Oylik/Yillik</div>
+        </div>
+        <button class="setting-action disabled">Tez orada</button>
+      </div>
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-name">Export</div>
+          <div class="setting-desc">Ma'lumotlarni yuklab olish</div>
+        </div>
+        <button class="setting-action disabled">Tez orada</button>
+      </div>
     </div>
   </div>
 
@@ -489,28 +603,70 @@ body {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
     Tarix
   </button>
-  <button class="nav-btn" onclick="goPage('stats',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-    Statistika
+  <button class="nav-btn" onclick="goPage('other',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.66 5.66l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m5.66-5.66l4.24-4.24"/></svg>
+    Boshqa
   </button>
 </nav>
 
-<!-- MODAL: PIN -->
-<div class="modal-backdrop" id="modal-pin">
+<!-- MODAL: PIN for budget change -->
+<div class="modal-backdrop" id="modal-budget-pin">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <div class="modal-title">Byudjetni o'zgartirish</div>
-    <div class="modal-sub">Tasdiqlash uchun maxfiy so'zni kiriting.</div>
-    <div class="pin-hint" style="display: none;">Hozirgi kod: <span id="pin-show">----</span></div>
-    <input class="pin-input" type="text" id="pin-input" maxlength="4" placeholder="····" inputmode="numeric" autocomplete="off"/>
+    <div class="modal-title">Tasdiqlash</div>
+    <div class="modal-sub">Oylik byudjetni tahrirlash uchun maxfiy raqamni kiriting.</div>
+    <div class="pin-hint" style="display: none;">Hozirgi kod: <span id="budget-pin-show">----</span></div>
+    <input class="pin-input" type="text" id="budget-pin-input" maxlength="4" placeholder="····" inputmode="numeric" autocomplete="off"/>
     <div class="modal-btns">
-      <button class="modal-btn cancel" onclick="closeModal('modal-pin')">Bekor</button>
-      <button class="modal-btn confirm" onclick="confirmPin()">Tasdiqlash</button>
+      <button class="modal-btn cancel" onclick="closeModal('modal-budget-pin')">Bekor</button>
+      <button class="modal-btn confirm" onclick="confirmBudgetPin()">Tasdiqlash</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: CONFIRM DELETE SINGLE -->
+<!-- MODAL: Budget amount input -->
+<div class="modal-backdrop" id="modal-budget-amount">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Byudjet kiritish</div>
+    <div class="modal-sub">Oylik byudjet miqdorini kiriting</div>
+    <div class="f-row">
+      <div class="f-lbl">Miqdor (UZS)</div>
+      <input class="f-input" type="number" id="new-budget-input" placeholder="1000000" inputmode="numeric"/>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal('modal-budget-amount')">Bekor</button>
+      <button class="modal-btn confirm" onclick="saveBudgetAmount()">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Edit Entry -->
+<div class="modal-backdrop" id="modal-edit">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Xarajatni tahrirlash</div>
+    <div class="f-row">
+      <div class="f-lbl">Miqdor</div>
+      <div class="amt-wrap">
+        <span class="cur">UZS</span>
+        <input class="f-input" type="text" id="edit-amount" placeholder="0" inputmode="numeric"/>
+      </div>
+    </div>
+    <div class="f-row">
+      <div class="f-lbl">Kategoriya</div>
+      <div class="cat-grid" id="edit-cat-grid">
+        <!-- populated dynamically -->
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal('modal-edit')">Bekor</button>
+      <button class="modal-btn confirm" onclick="saveEdit()">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Delete confirm -->
 <div class="modal-backdrop" id="modal-del">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
@@ -523,15 +679,43 @@ body {
   </div>
 </div>
 
-<!-- MODAL: CONFIRM CLEAR ALL -->
+<!-- MODAL: Clear all -->
 <div class="modal-backdrop" id="modal-clear">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-title">Hammasini o'chirish</div>
-    <div class="modal-sub">Barcha xarajatlarni o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi.</div>
+    <div class="modal-sub">Barcha xarajatlarni o'chirmoqchimisiz?</div>
     <div class="modal-btns">
       <button class="modal-btn cancel" onclick="closeModal('modal-clear')">Bekor</button>
       <button class="modal-btn danger" onclick="confirmClear()">Hammani o'chirish</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Category filter -->
+<div class="modal-backdrop" id="modal-cat-filter">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Kategoriya tanlang</div>
+    <div class="cat-grid" id="filter-cat-grid">
+      <!-- populated dynamically -->
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="clearCatFilter()">Tozalash</button>
+      <button class="modal-btn confirm" onclick="closeModal('modal-cat-filter')">Yopish</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Month reset confirmation -->
+<div class="modal-backdrop" id="modal-month-reset">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Diagramma yangilash</div>
+    <div class="modal-sub">Yangi oy boshlandi. Diagrammani yangilashni xohlaysizmi? Bu harakat o'tgan oy ma'lumotlarini arxivlaydi.</div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="skipMonthReset()">Keyinroq</button>
+      <button class="modal-btn confirm" onclick="confirmMonthReset()">Yangilash</button>
     </div>
   </div>
 </div>
@@ -545,13 +729,22 @@ const CATS = {
   kommunal:  { label:'Kommunal',   ico:'💡', ic:'ic-kommunal',  bar:'bar-kommunal'  },
   soglik:    { label:"Sog'liq",    ico:'💊', ic:'ic-soglik',    bar:'bar-soglik'    },
   kiyim:     { label:'Kiyim',      ico:'👔', ic:'ic-kiyim',     bar:'bar-kiyim'     },
+  uy:        { label:'Uy-joy',     ico:'🏠', ic:'ic-uy',        bar:'bar-uy'        },
+  taʼlim:    { label:"Ta'lim",     ico:'📚', ic:'ic-taʼlim',    bar:'bar-taʼlim'    },
+  koʼngil:   { label:"Ko'ngil",    ico:'🎮', ic:'ic-koʼngil',   bar:'bar-koʼngil'   },
   boshqa:    { label:'Boshqa',     ico:'📦', ic:'ic-boshqa',    bar:'bar-boshqa'    },
 };
 
 let entries = [];
 let budget  = 0;
 let selCat  = 'oziq';
+let editingId = null;
 let pendingDeleteId = null;
+let editCat = 'oziq';
+let filterDateStart = null;
+let filterDateEnd = null;
+let filterCats = new Set();
+let chartResetMonth = null; // tracks when chart was last reset
 
 // ── HELPERS ──────────────────────────────
 function fmt(n) {
@@ -569,17 +762,24 @@ function dateLabel(iso) {
   return new Date(iso).toLocaleDateString('uz-UZ', {day:'numeric', month:'short'});
 }
 
+// Format number with spaces: 1000000 → 1 000 000
+function formatInputNumber(val) {
+  return val.replace(/\D/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+}
+
 // ── STORAGE ───────────────────────────────
 function saveLocal() {
-  localStorage.setItem('x_entries3', JSON.stringify(entries));
-  localStorage.setItem('x_budget3',  budget);
+  localStorage.setItem('x_entries4', JSON.stringify(entries));
+  localStorage.setItem('x_budget4',  budget);
 }
 
 function loadLocal() {
-  entries = JSON.parse(localStorage.getItem('x_entries3') || '[]');
-  budget  = parseFloat(localStorage.getItem('x_budget3')  || '0');
-  if (budget) document.getElementById('f-budget').value = budget;
+  entries = JSON.parse(localStorage.getItem('x_entries4') || '[]');
+  budget  = parseFloat(localStorage.getItem('x_budget4')  || '0');
+  chartResetMonth = localStorage.getItem('x_chart_reset') || null;
   renderDash();
+  renderChart();
+  checkMonthReset();
 }
 
 // ── NAV ───────────────────────────────────
@@ -590,22 +790,29 @@ function goPage(name, btn) {
   btn.classList.add('active');
   if (name==='dash')  renderDash();
   if (name==='hist')  renderHist();
-  if (name==='stats') renderStats();
+  if (name==='other') { renderChart(); updateBudgetDisplay(); }
 }
 
-// ── CAT SELECT ────────────────────────────
-document.querySelectorAll('.cat-item').forEach(el => {
+// ── CAT SELECT (add page) ─────────────────
+document.querySelectorAll('#cat-grid .cat-item').forEach(el => {
   el.addEventListener('click', () => {
-    document.querySelectorAll('.cat-item').forEach(x=>x.classList.remove('sel'));
+    document.querySelectorAll('#cat-grid .cat-item').forEach(x=>x.classList.remove('sel'));
     el.classList.add('sel');
     selCat = el.dataset.cat;
   });
 });
 
+// Amount input formatting
+const amtInput = document.getElementById('f-amount');
+amtInput.addEventListener('input', e => {
+  e.target.value = formatInputNumber(e.target.value);
+});
+
 // ── ADD ENTRY ─────────────────────────────
 function addEntry() {
   const desc   = document.getElementById('f-desc').value.trim();
-  const amount = parseFloat(document.getElementById('f-amount').value);
+  const amtStr = document.getElementById('f-amount').value.replace(/\s/g,'');
+  const amount = parseFloat(amtStr);
   if (!desc)               { toast('Tavsif kiriting'); return; }
   if (!amount || amount<=0){ toast("To'g'ri miqdor kiriting"); return; }
 
@@ -620,7 +827,7 @@ function addEntry() {
   if (budget && total > budget) setTimeout(()=>toast('⚠ Byudjet oshib ketdi!'),2400);
 }
 
-// ── PIN / BUDGET ──────────────────────────
+// ── BUDGET ────────────────────────────────
 function getTimePin() {
   const n = new Date();
   const h = String(n.getHours()).padStart(2,'0');
@@ -628,35 +835,142 @@ function getTimePin() {
   return h + m;
 }
 
-function openPinModal() {
-  const v = parseFloat(document.getElementById('f-budget').value);
-  if (!v || v<=0) { toast("To'g'ri byudjet kiriting"); return; }
-  document.getElementById('pin-show').textContent = getTimePin();
-  document.getElementById('pin-input').value = '';
-  document.getElementById('pin-input').classList.remove('err');
-  openModal('modal-pin');
-  setTimeout(()=>document.getElementById('pin-input').focus(), 300);
+function openBudgetChange() {
+  document.getElementById('budget-pin-show').textContent = getTimePin();
+  document.getElementById('budget-pin-input').value = '';
+  document.getElementById('budget-pin-input').classList.remove('err');
+  openModal('modal-budget-pin');
+  setTimeout(()=>document.getElementById('budget-pin-input').focus(), 300);
 }
 
-function confirmPin() {
-  const entered = document.getElementById('pin-input').value.trim();
+function confirmBudgetPin() {
+  const entered = document.getElementById('budget-pin-input').value.trim();
   const correct = getTimePin();
   if (entered !== correct) {
-    const inp = document.getElementById('pin-input');
+    const inp = document.getElementById('budget-pin-input');
     inp.classList.add('err');
     setTimeout(()=>inp.classList.remove('err'), 400);
     toast("Noto'g'ri kod");
     return;
   }
-  budget = parseFloat(document.getElementById('f-budget').value);
+  closeModal('modal-budget-pin');
+  document.getElementById('new-budget-input').value = budget || '';
+  openModal('modal-budget-amount');
+  setTimeout(()=>document.getElementById('new-budget-input').focus(), 300);
+}
+
+function saveBudgetAmount() {
+  const val = parseFloat(document.getElementById('new-budget-input').value);
+  if (!val || val<=0) { toast("To'g'ri miqdor kiriting"); return; }
+  budget = val;
   saveLocal();
-  closeModal('modal-pin');
+  closeModal('modal-budget-amount');
   toast('✓ Byudjet saqlandi');
+  updateBudgetDisplay();
   renderDash();
 }
 
-// ── DELETE ────────────────────────────────
+function updateBudgetDisplay() {
+  const el = document.getElementById('budget-display');
+  el.textContent = budget ? fmtFull(budget) : '—';
+}
+
+// ── EDIT / DELETE ─────────────────────────
+let longPressTimer;
+let activeContextId = null;
+
+function handleEntryClick(id, event) {
+  // Desktop: single click toggles context
+  if (!('ontouchstart' in window)) {
+    event.stopPropagation();
+    if (activeContextId === id) {
+      hideAllContexts();
+    } else {
+      showContext(id);
+    }
+  }
+}
+
+function handleTouchStart(id) {
+  // Mobile: long press (500ms)
+  longPressTimer = setTimeout(() => showContext(id), 500);
+}
+
+function handleTouchEnd() {
+  clearTimeout(longPressTimer);
+}
+
+function showContext(id) {
+  hideAllContexts();
+  activeContextId = id;
+  const card = document.querySelector(`[data-entry-id="${id}"]`);
+  if (!card) return;
+  const ctx = document.createElement('div');
+  ctx.className = 'entry-context';
+  ctx.id = 'ctx-' + id;
+  ctx.innerHTML = `
+    <button class="entry-context-btn edit" onclick="openEditModal(${id})">Tahrirlash</button>
+    <button class="entry-context-btn delete" onclick="openDeleteConfirm(${id})">O'chirish</button>
+  `;
+  card.appendChild(ctx);
+}
+
+function hideAllContexts() {
+  document.querySelectorAll('.entry-context').forEach(el=>el.remove());
+  activeContextId = null;
+}
+
+function openEditModal(id) {
+  hideAllContexts();
+  editingId = id;
+  const e = entries.find(x=>x.id===id);
+  if (!e) return;
+  document.getElementById('edit-amount').value = formatInputNumber(String(e.amount));
+  editCat = e.cat;
+  
+  // populate cat grid
+  const grid = document.getElementById('edit-cat-grid');
+  grid.innerHTML = Object.entries(CATS).map(([key, c]) => 
+    `<div class="cat-item ${key===editCat?'sel':''}" data-cat="${key}" onclick="selectEditCat('${key}')">
+      <span class="ico">${c.ico}</span>${c.label}
+    </div>`
+  ).join('');
+  
+  openModal('modal-edit');
+  setTimeout(()=>document.getElementById('edit-amount').focus(), 300);
+}
+
+function selectEditCat(cat) {
+  editCat = cat;
+  document.querySelectorAll('#edit-cat-grid .cat-item').forEach(x=>x.classList.remove('sel'));
+  document.querySelector(`#edit-cat-grid [data-cat="${cat}"]`).classList.add('sel');
+}
+
+const editAmtInput = document.getElementById('edit-amount');
+editAmtInput.addEventListener('input', e => {
+  e.target.value = formatInputNumber(e.target.value);
+});
+
+function saveEdit() {
+  if (editingId === null) return;
+  const amtStr = document.getElementById('edit-amount').value.replace(/\s/g,'');
+  const amount = parseFloat(amtStr);
+  if (!amount || amount<=0) { toast("To'g'ri miqdor kiriting"); return; }
+  
+  const e = entries.find(x=>x.id===editingId);
+  if (!e) return;
+  e.amount = amount;
+  e.cat = editCat;
+  saveLocal();
+  closeModal('modal-edit');
+  renderDash();
+  renderHist();
+  toast('✓ Tahrirlandi');
+  editingId = null;
+}
+
 function openDeleteConfirm(id) {
+  hideAllContexts();
   pendingDeleteId = id;
   const e = entries.find(x=>x.id===id);
   document.getElementById('modal-del-desc').textContent =
@@ -672,7 +986,7 @@ function confirmDelete() {
   closeModal('modal-del');
   entries = entries.filter(e=>e.id!==id);
   saveLocal();
-  renderDash(); renderHist(); renderStats();
+  renderDash(); renderHist();
   toast("O'chirildi");
 }
 
@@ -685,7 +999,7 @@ function confirmClear() {
   closeModal('modal-clear');
   entries = [];
   saveLocal();
-  renderDash(); renderHist(); renderStats();
+  renderDash(); renderHist();
   toast('Tozalandi');
 }
 
@@ -697,14 +1011,22 @@ document.querySelectorAll('.modal-backdrop').forEach(el => {
   el.addEventListener('click', e => { if (e.target===el) closeModal(el.id); });
 });
 
-document.getElementById('pin-input').addEventListener('keydown', e => {
-  if (e.key==='Enter') confirmPin();
+document.getElementById('budget-pin-input').addEventListener('keydown', e => {
+  if (e.key==='Enter') confirmBudgetPin();
 });
 
 // ── ENTRY HTML ────────────────────────────
-function entryHTML(e) {
+function entryHTML(e, allowContext = false) {
   const c = CATS[e.cat]||CATS.boshqa;
-  return `<div class="entry-card">
+  const contextAttr = allowContext ? `data-entry-id="${e.id}" class="entry-card clickable"` : 'class="entry-card"';
+  
+  // Desktop: click to show context
+  // Mobile: long press
+  const contextEvent = allowContext 
+    ? `onclick="handleEntryClick(${e.id}, event)" ontouchstart="handleTouchStart(${e.id})" ontouchend="handleTouchEnd()" ontouchcancel="handleTouchEnd()"`
+    : '';
+  
+  return `<div ${contextAttr} ${contextEvent}>
     <div class="entry-ico ${c.ic}">${c.ico}</div>
     <div class="entry-info">
       <div class="entry-desc">${e.desc}</div>
@@ -712,7 +1034,6 @@ function entryHTML(e) {
     </div>
     <div class="entry-right">
       <div class="entry-amt">${fmtFull(e.amount)}</div>
-      <button class="del-btn" onclick="openDeleteConfirm(${e.id})">✕</button>
     </div>
   </div>`;
 }
@@ -748,48 +1069,207 @@ function renderDash() {
   const el  = document.getElementById('dash-recent');
   const rec = entries.slice(0,3);
   el.innerHTML = rec.length
-    ? rec.map(e=>entryHTML(e)).join('')
+    ? rec.map(e=>entryHTML(e, false)).join('')
     : '<div class="empty-msg"><div class="big">🌱</div>Hali xarajat yo\'q</div>';
 }
 
 // ── RENDER HIST ───────────────────────────
 function renderHist() {
+  let filtered = [...entries];
+  
+  // Apply date filter
+  if (filterDateStart || filterDateEnd) {
+    filtered = filtered.filter(e => {
+      if (filterDateStart && e.date < filterDateStart) return false;
+      if (filterDateEnd && e.date > filterDateEnd) return false;
+      return true;
+    });
+  }
+  
+  // Apply category filter
+  if (filterCats.size > 0) {
+    filtered = filtered.filter(e => filterCats.has(e.cat));
+  }
+  
   const el = document.getElementById('hist-list');
-  el.innerHTML = entries.length
-    ? entries.map(e=>entryHTML(e)).join('')
-    : '<div class="empty-msg"><div class="big">📋</div>Tarix bo\'sh</div>';
+  el.innerHTML = filtered.length
+    ? filtered.map(e=>entryHTML(e, true)).join('')
+    : '<div class="empty-msg"><div class="big">📋</div>Hali xarajat yo\'q</div>';
 }
 
-// ── RENDER STATS ──────────────────────────
-function renderStats() {
-  const total = entries.reduce((s,e)=>s+e.amount,0);
-  document.getElementById('s-total').textContent = fmtFull(total)+' UZS';
-  const catT={};
-  entries.forEach(e=>{ catT[e.cat]=(catT[e.cat]||0)+e.amount; });
-  const cats = Object.entries(catT).sort((a,b)=>b[1]-a[1]);
-  document.getElementById('s-cats').textContent = cats.length;
-  document.getElementById('s-avg').textContent  = entries.length ? fmt(total/entries.length) : '0';
+// ── FILTERS ───────────────────────────────
+function toggleDateFilter() {
+  const section = document.getElementById('date-filter-section');
+  const btn = document.getElementById('filter-date-btn');
+  const isOpen = section.style.display === 'block';
+  section.style.display = isOpen ? 'none' : 'block';
+  btn.classList.toggle('active', !isOpen);
+}
 
-  const el = document.getElementById('cat-stat-list');
-  if (!cats.length) {
-    el.innerHTML='<div class="empty-msg"><div class="big">📊</div>Ma\'lumot yo\'q</div>';
+function applyDateFilter() {
+  filterDateStart = document.getElementById('filter-date-start').value || null;
+  filterDateEnd = document.getElementById('filter-date-end').value || null;
+  renderHist();
+  const btn = document.getElementById('filter-date-btn');
+  btn.classList.toggle('active', filterDateStart || filterDateEnd);
+}
+
+function clearDateFilter() {
+  filterDateStart = null;
+  filterDateEnd = null;
+  document.getElementById('filter-date-start').value = '';
+  document.getElementById('filter-date-end').value = '';
+  document.getElementById('date-filter-section').style.display = 'none';
+  document.getElementById('filter-date-btn').classList.remove('active');
+  renderHist();
+}
+
+function openCatFilter() {
+  const grid = document.getElementById('filter-cat-grid');
+  grid.innerHTML = Object.entries(CATS).map(([key, c]) => 
+    `<div class="cat-item ${filterCats.has(key)?'sel':''}" data-cat="${key}" onclick="toggleFilterCat('${key}')">
+      <span class="ico">${c.ico}</span>${c.label}
+    </div>`
+  ).join('');
+  openModal('modal-cat-filter');
+}
+
+function toggleFilterCat(cat) {
+  if (filterCats.has(cat)) {
+    filterCats.delete(cat);
+  } else {
+    filterCats.add(cat);
+  }
+  const el = document.querySelector(`#filter-cat-grid [data-cat="${cat}"]`);
+  el.classList.toggle('sel');
+  renderHist();
+  const btn = document.getElementById('filter-cat-btn');
+  btn.classList.toggle('active', filterCats.size > 0);
+}
+
+function clearCatFilter() {
+  filterCats.clear();
+  const grid = document.getElementById('filter-cat-grid');
+  grid.querySelectorAll('.cat-item').forEach(el => el.classList.remove('sel'));
+  renderHist();
+  document.getElementById('filter-cat-btn').classList.remove('active');
+  closeModal('modal-cat-filter');
+}
+
+// ── RENDER CHART ──────────────────────────
+function renderChart() {
+  const canvas = document.getElementById('monthChart');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * 2;
+  canvas.height = canvas.offsetHeight * 2;
+  ctx.scale(2, 2);
+  
+  const w = canvas.offsetWidth;
+  const h = canvas.offsetHeight;
+  
+  ctx.clearRect(0, 0, w, h);
+  
+  if (entries.length === 0) {
+    ctx.fillStyle = '#ADA89F';
+    ctx.font = '12px Nunito';
+    ctx.textAlign = 'center';
+    ctx.fillText('Hali xarajat yo\'q', w/2, h/2);
     return;
   }
-  const max = cats[0][1];
-  el.innerHTML = cats.map(([cat,amt])=>{
-    const c   = CATS[cat]||CATS.boshqa;
-    const pct = total?(amt/total*100):0;
-    return `<div class="cat-stat-row">
-      <div class="cat-stat-top">
-        <div class="cat-stat-name"><span>${c.ico}</span>${c.label}</div>
-        <div class="cat-stat-amt">${fmtFull(amt)}</div>
-      </div>
-      <div class="cat-bar-track">
-        <div class="cat-bar-fill ${c.bar}" style="width:${(amt/max*100).toFixed(1)}%"></div>
-      </div>
-      <div class="cat-pct">${pct.toFixed(1)}% · ${entries.filter(e=>e.cat===cat).length} ta operatsiya</div>
-    </div>`;
-  }).join('');
+  
+  // Get current month entries only
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+  
+  const monthEntries = entries.filter(e => {
+    const d = new Date(e.date);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+  });
+  
+  if (monthEntries.length === 0) {
+    ctx.fillStyle = '#ADA89F';
+    ctx.font = '12px Nunito';
+    ctx.textAlign = 'center';
+    ctx.fillText('Bu oyda hali xarajat yo\'q', w/2, h/2);
+    return;
+  }
+  
+  // Find first entry date in this month
+  const dates = monthEntries.map(e => new Date(e.date));
+  const firstDate = new Date(Math.min(...dates));
+  const firstDay = firstDate.getDate();
+  const todayDay = today.getDate();
+  
+  // Calculate days to show (from first entry to today)
+  const daysToShow = todayDay - firstDay + 1;
+  
+  if (daysToShow <= 0) {
+    ctx.fillStyle = '#ADA89F';
+    ctx.font = '12px Nunito';
+    ctx.textAlign = 'center';
+    ctx.fillText('Ma\'lumot yo\'q', w/2, h/2);
+    return;
+  }
+  
+  // Build daily data
+  const dailyData = [];
+  for (let i = 0; i < daysToShow; i++) {
+    const day = firstDay + i;
+    const d = new Date(currentYear, currentMonth, day);
+    const dateStr = d.toISOString().slice(0,10);
+    const dayTotal = monthEntries.filter(e => e.date === dateStr).reduce((s,e)=>s+e.amount, 0);
+    dailyData.push({ day: day, total: dayTotal });
+  }
+  
+  const maxTotal = Math.max(...dailyData.map(d=>d.total), 1);
+  const barW = (w - 40) / daysToShow;
+  const chartH = h - 40;
+  
+  dailyData.forEach((d, i) => {
+    const barH = (d.total / maxTotal) * chartH;
+    const x = 20 + i * barW;
+    const y = h - 20 - barH;
+    
+    ctx.fillStyle = '#4A7C59';
+    ctx.fillRect(x, y, Math.max(barW - 4, 2), barH);
+    
+    // Day label (show every 3rd day if too many)
+    if (daysToShow <= 10 || i % 3 === 0) {
+      ctx.fillStyle = '#7C776F';
+      ctx.font = '10px Nunito';
+      ctx.textAlign = 'center';
+      ctx.fillText(d.day, x + barW/2 - 2, h - 5);
+    }
+  });
+}
+
+// ── MONTH RESET ───────────────────────────
+function checkMonthReset() {
+  const today = new Date();
+  const currentMonthKey = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+  
+  // If it's the 1st of the month and we haven't reset yet
+  if (today.getDate() === 1 && chartResetMonth !== currentMonthKey) {
+    openModal('modal-month-reset');
+  }
+}
+
+function confirmMonthReset() {
+  const today = new Date();
+  const currentMonthKey = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+  
+  chartResetMonth = currentMonthKey;
+  localStorage.setItem('x_chart_reset', chartResetMonth);
+  
+  closeModal('modal-month-reset');
+  renderChart();
+  toast('✓ Diagramma yangilandi');
+}
+
+function skipMonthReset() {
+  closeModal('modal-month-reset');
+  toast('Keyinroq yangilashingiz mumkin');
 }
 
 // ── TOAST ─────────────────────────────────
@@ -807,8 +1287,8 @@ function tick() {
   const n=new Date();
   const t=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
   document.getElementById('clock-disp').textContent=t;
-  if (document.getElementById('modal-pin').classList.contains('open')) {
-    document.getElementById('pin-show').textContent = getTimePin();
+  if (document.getElementById('modal-budget-pin').classList.contains('open')) {
+    document.getElementById('budget-pin-show').textContent = getTimePin();
   }
 }
 tick();
@@ -819,8 +1299,16 @@ document.addEventListener('keydown', e=>{
   if (e.key==='Enter' && ['f-desc','f-amount'].includes(document.activeElement.id)) addEntry();
 });
 
+// Hide context menu when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.entry-context') && !e.target.closest('.entry-card')) {
+    hideAllContexts();
+  }
+});
+
 // ── INIT ──────────────────────────────────
 loadLocal();
+updateBudgetDisplay();
 </script>
 
 <script>

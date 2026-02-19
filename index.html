@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="/icons/icon-192.png"/>
 <link rel="manifest" href="/manifest.json"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>PulTrack</title>
+<title>FinTrack</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap');
 
@@ -437,7 +437,7 @@ body {
 <!-- TOP BAR -->
 <div class="topbar">
   <div class="logo">
-    <span class="logo-ia">Pul</span>Track
+    <span class="logo-ia">Fin</span>Track
   </div>
   <div class="topbar-right">
     <span id="clock-disp">--:--</span>
@@ -867,7 +867,7 @@ function confirmBudgetPin() {
   closeModal('modal-budget-pin');
   document.getElementById('new-budget-input').value = budget || '';
   openModal('modal-budget-amount');
-  setTimeout(()=>document.getElementById('new-budget-input').focus(), 300);
+  setTimeout(()=>document.getElementById('new-budget-input'), 300);
 }
 
 function saveBudgetAmount() {
